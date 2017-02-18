@@ -40,6 +40,16 @@ app.get('/actions', function (req, res, next) {
     }
   });
 });
+app.post('/sendMessage', function (req) {
+flock.callMethod('chat.sendMessage', token, {
+    to:  req.body.sendto ,
+    text: req.body.text
+}, function (error, response) {
+    if (!error) {
+        console.log(response);
+    }
+});
+});
 
 // Read tokens from a local file, if possible.
 var tokens;
