@@ -15,11 +15,21 @@ app.use(flock.events.tokenVerifier);
 app.set('view engine', 'ejs');
 
 app.post('/events', flock.events.listener);
+
+// Read tokens from a local file, if possible.
+var tokens;
+try {
+    tokens = require('./tokens.json');
+} catch (e) {
+    tokens = {};
+}
+
 app.get('/actions', function (req, res, next) {
   var event = JSON.parse(req.query.flockEvent);
+  console.log(event);
   flock.callMethod('chat.fetchMessages', tokens[event.userId], {
     chat: event.chat,
-    uids: [event.messageUids.messageUid]
+    uids: event.messageUids
   }, function (err, messages) {
     if (err) { return console.log(err) }
     else {
@@ -33,7 +43,9 @@ app.get('/actions', function (req, res, next) {
       }, function (error, response, body) {
         if (!error && response.statusCode === 200) {
           res.render('actions', {
-            items: JSON.parse(body).items
+            items: JSON.parse(body).items,
+            sendTo: event.chat,
+            userId: event.userId
           });
         } else {
           console.log(error);
@@ -42,24 +54,18 @@ app.get('/actions', function (req, res, next) {
     }
   });
 });
-app.post('/sendMessage', function (req) {
-flock.callMethod('chat.sendMessage', token, {
-    to:  req.body.sendto ,
-    text: req.body.text
-}, function (error, response) {
-    if (!error) {
-        console.log(response);
-    }
-});
-});
 
-// Read tokens from a local file, if possible.
-var tokens;
-try {
-    tokens = require('./tokens.json');
-} catch (e) {
-    tokens = {};
-}
+app.get('/sendMessage', function (req) {
+  console.log(req.query);
+  flock.callMethod('chat.sendMessage', tokens[req.query.userId], {
+    to:  req.query.sendTo,
+    text: req.query.text
+  }, function (error, response) {
+    if (!error) {
+      console.log(response);
+    }
+  });
+});
 
 // save tokens on app.install
 flock.events.on('app.install', function (event) {
@@ -70,11 +76,6 @@ flock.events.on('app.install', function (event) {
 flock.events.on('app.uninstall', function (event) {
     delete tokens[event.userId];
 });
-
-flock.events.on('client.messageAction', function (event) {
-});
-
-
 
 // Start the listener after reading the port from config
 var port = config.port || 9000;

@@ -15,7 +15,9 @@
 .items > .item > a.button {
   padding: 4px 7px;
   background: transparent;
-  border: rgba(0,0,0,0.2);
+  border: 1px solid rgba(0,0,0,0.2);
+    display: block;
+      cursor: pointer;
 }
 </style>
 <div class='items'>
@@ -23,7 +25,7 @@
     <div class='item'>
       <a href=<%= item.link %>><%= item.title %></a>
       <%= item.snippet %>
-      <a class='button'>Send this</a>
+      <a class='button' href=<%= '/sendMessage?text=' + encodeURI(item.link) + '&sendTo=' + sendTo + '&userId=' + userId %>>Send this</a>
     </div>
   <% }); %>
 </div>
