@@ -9,6 +9,7 @@
     "url": "https://github.com/flockchat/app-install-tutorial-nodejs.git"
   },
   "dependencies": {
+    "ejs": "^2.5.6",
     "express": "^4.14.0",
     "flockos": "^0.0.4"
   }
