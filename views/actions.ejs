@@ -1,31 +1,71 @@
-<style>
-.items {
-  margin: 5px;
-}
-.item {
-  background: #fff;
-  box-shadow: 0 0 1px 1px rgba(0,0,0,0.2);
-  width: 150px;
-  height: 225px;
-  border: 1px solid #c5c5c5;
-}
-.items > .item > a {
-  color: rgba(0,0,0,0.8);
-}
-.items > .item > a.button {
-  padding: 4px 7px;
-  background: transparent;
-  border: 1px solid rgba(0,0,0,0.2);
-    display: block;
-      cursor: pointer;
-}
-</style>
-<div class='items'>
-  <% items.forEach(function (item) { %>
-    <div class='item'>
-      <a href=<%= item.link %>><%= item.title %></a>
-      <%= item.snippet %>
-      <a class='button' href=<%= '/sendMessage?text=' + encodeURI(item.link) + '&sendTo=' + sendTo + '&userId=' + userId %>>Send this</a>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <style>
+      * { font-family: 'Open Sans', sans-serif; font-weight: 400; font-size: 0.9rem }
+      body { background: #FAFAFA }
+      .item {
+        background: #fff;
+        box-shadow: 0 1px 0 0 rgba(0,0,0,0.2);
+        border: 1px solid #c5c5c5;
+        border-left: 3px solid #5db550;
+        margin-bottom: 7px;
+        padding: 10px 0;
+        border-radius: 4px 2px 2px 4px;
+      }
+      .items > .item > a {
+        display: block;
+        padding-left: 7px;
+      }
+      .items > .item > a.button {
+        padding: 4px 7px;
+        background: transparent;
+        border: 1px solid rgba(0,0,0,0.2);
+        cursor: pointer;
+        display: inline-block;
+      }
+      .items > .item > a.button:hover { background: rgba(0,0,0,0.2); color: white; }
+      .item > img {
+        float: left;
+        max-height: 60px;
+        width: 60px;
+        margin-right: 7px;
+        margin-left: 7px;
+        margin-top: 9px;
+      }
+      .item > p {
+        margin: 0;
+        margin-top: 3px;
+        padding: 5px 7px;
+        border-top: 1px solid #FAFAFA;
+      }
+    </style>
+    <script type='text/javascript' src='https://apps-static.flock.co/js-sdk/0.1.0/flock.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class='items'>
+      <% items.forEach(function (item) { %>
+      <div class='item'>
+        <a href=<%= item.link %>><%= item.title %></a>
+        <p style='color: #0abe50; border-top: none; padding: 0 7px; margin: 0'><%= item.displayLink %></p>
+        <% if (item.pagemap && item.pagemap.cse_thumbnail) { %>
+          <img src=<%= item.pagemap.cse_thumbnail[0].src %> />
+        <% } else { %>
+          <img src='https://pbs.twimg.com/profile_images/781203065454022674/DghC5a3s_normal.jpg' alt='google logo' />
+        <% } %>
+        <p><%= item.snippet.substr(0, 88) %>...</p>
+        <!--a class='button' onclick="sendMessage('<%= encodeURI(item.link) %>', '<%= sendTo %>', '<%= userId %>')">Send this</a-->
+      </div>
+      <% }); %>
     </div>
-  <% }); %>
-</div>
+    <script>
+      function sendMessage(url, sendTo, userId) {
+        var params = 'text=' + url + '&sendTo=' + sendTo + '&userId=' + userId;
+        $.get('/sendMessage?' + params, function (data) {
+          flock.close();
+        });
+      }
+    </script>
+  </body>
+</html>

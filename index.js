@@ -55,7 +55,7 @@ app.get('/actions', function (req, res, next) {
   });
 });
 
-app.get('/sendMessage', function (req) {
+app.get('/sendMessage', function (req, res) {
   console.log(req.query);
   flock.callMethod('chat.sendMessage', tokens[req.query.userId], {
     to:  req.query.sendTo,
@@ -63,7 +63,8 @@ app.get('/sendMessage', function (req) {
   }, function (error, response) {
     if (!error) {
       console.log(response);
-    }
+      res.send(200);
+    } else { console.log(error); }
   });
 });
 
