@@ -65,14 +65,23 @@ app.get('/actions', function (req, res, next) {
 });
 
 app.get('/sendMessage', function (req, res) {
-  console.log(req.query);
+  console.log('/sendMessage', req.query);
   flock.callMethod('chat.sendMessage', tokens[req.query.userId], {
     to:  req.query.sendTo,
-    text: req.query.text
+    text: req.query.text,
+    attachments: [{
+      "title" : req.query.title ,"description": req.query.description ,
+      "views": {
+        "image": {
+          "original": { "src": req.query.image , "width": 250, "height": 250 },
+          "filename": "filename.jpg"
+        }
+      }
+    }]
   }, function (error, response) {
     if (!error) {
       console.log(response);
-      res.send(200);
+      res.sendStatus(200);
     } else { console.log(error); }
   });
 });

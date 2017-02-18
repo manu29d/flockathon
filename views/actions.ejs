@@ -78,14 +78,14 @@
         <% } %>
         <p><%= item.snippet.substr(0, 88) %>...</p>
         <div class='button-container'>
-          <a class='button' onclick="sendMessage('<%= encodeURI(item.link) %>', '<%= sendTo %>', '<%= userId %>')"><i class='fa fa-share-square-o fa-2x'></i></a>
+          <a class='button' onclick="sendMessage(<%= JSON.stringify(item) %>, '<%= sendTo %>', '<%= userId %>')"><i class='fa fa-share-square-o fa-2x'></i></a>
         </div>
       </div>
       <% }); %>
     </div>
     <script>
-      function sendMessage(url, sendTo, userId) {
-        var params = 'text=' + url + '&sendTo=' + sendTo + '&userId=' + userId;
+      function sendMessage(item, sendTo, userId) {
+        var params = 'text=' + item.link + '&sendTo=' + sendTo + '&userId=' + userId +'&title=' + item.title + '&description=' + item.snippet + '&image=' + (item.pagemap && item.pagemap.cse_image && item.pagemap.cse_image[0] && item.pagemap.cse_image[0].src);
         $.get('/sendMessage?' + params, function (data) {
           flock.close();
         });
