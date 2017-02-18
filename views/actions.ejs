@@ -1,8 +1,29 @@
-<% items.forEach(function (item) { %>
-  <a href=<%= item.link %>><%= item.title %></a>
-  <%= item.snippet %>
-<% }); %>
-<script type='text/javascript'></script>
-<pre lang='js' style='max-width: 100%;'>
-  <%= items %>
-</pre>
+<style>
+.items {
+  margin: 5px;
+}
+.item {
+  background: #fff;
+  box-shadow: 0 0 1px 1px rgba(0,0,0,0.2);
+  width: 150px;
+  height: 225px;
+  border: 1px solid #c5c5c5;
+}
+.items > .item > a {
+  color: rgba(0,0,0,0.8);
+}
+.items > .item > a.button {
+  padding: 4px 7px;
+  background: transparent;
+  border: rgba(0,0,0,0.2);
+}
+</style>
+<div class='items'>
+  <% items.forEach(function (item) { %>
+    <div class='item'>
+      <a href=<%= item.link %>><%= item.title %></a>
+      <%= item.snippet %>
+      <a class='button'>Send this</a>
+    </div>
+  <% }); %>
+</div>

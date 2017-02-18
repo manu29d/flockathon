@@ -32,11 +32,13 @@ app.get('/actions', function (req, res, next) {
         }
       }, function (error, response, body) {
         if (!error && response.statusCode === 200) {
-          res.render('actions', {items: JSON.parse(body).items});
+          res.render('actions', {
+            items: JSON.parse(body).items
+          });
         } else {
           console.log(error);
         }
-      })
+      });
     }
   });
 });
