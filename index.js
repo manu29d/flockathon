@@ -24,35 +24,44 @@ try {
     tokens = {};
 }
 
+function callCustomSearch(messages, event, res) {
+  request({
+    uri: 'https://www.googleapis.com/customsearch/v1',
+    qs: {
+      key: config.google.key,
+      cx: config.google.cx,
+      q: messages[0].text
+    }
+  }, function (error, response, body) {
+    if (!error && response.statusCode === 200) {
+      res.render('actions', {
+        items: JSON.parse(body).items,
+        sendTo: event.chat,
+        userId: event.userId
+      });
+    } else {
+      console.log(error);
+    }
+  });
+}
+
 app.get('/actions', function (req, res, next) {
   var event = JSON.parse(req.query.flockEvent);
   console.log(event);
-  flock.callMethod('chat.fetchMessages', tokens[event.userId], {
-    chat: event.chat,
-    uids: event.messageUids
-  }, function (err, messages) {
-    if (err) { return console.log(err) }
-    else {
-      request({
-        uri: 'https://www.googleapis.com/customsearch/v1',
-        qs: {
-          key: config.google.key,
-          cx: config.google.cx,
-          q: messages[0].text
-        }
-      }, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-          res.render('actions', {
-            items: JSON.parse(body).items,
-            sendTo: event.chat,
-            userId: event.userId
-          });
-        } else {
-          console.log(error);
-        }
-      });
-    }
-  });
+  if (event.name === 'client.slashCommand') {
+    callCustomSearch([{text: event.text}], event, res);
+  }
+  else {
+    flock.callMethod('chat.fetchMessages', tokens[event.userId], {
+      chat: event.chat,
+      uids: event.messageUids
+    }, function (err, messages) {
+      if (err) { return console.log(err) }
+      else {
+        callCustomSearch(messages, event, res);
+      }
+    });
+  }
 });
 
 app.get('/sendMessage', function (req, res) {
