@@ -50,9 +50,9 @@ function callCustomSearch(messages, event, res) {
 app.get('/actions', function (req, res, next) {
   var event = JSON.parse(req.query.flockEvent);
   console.log(event);
+  event.textOnly = false; event.imageOnly = false;
   if (event.name === 'client.slashCommand') {
     var args = event.text.split(/\s/);
-    event.textOnly = false; event.imageOnly = false;
     if (args[0] === '-i') {event.imageOnly = true; event.text = args.slice(1).join(' ')}
     else if (args[0] === '-t') {event.textOnly = true; event.text = args.slice(1).join(' ')}
     callCustomSearch([{text: event.text}], event, res);
@@ -82,8 +82,9 @@ app.get('/sendMessage', function (req, res) {
     }
   };
   if (req.query.imageOnly) {
-    delete attachObj.text;
+    delete attachObj.title;
     delete attachObj.description;
+    req.query.text = '';
   } else if (req.query.textOnly) {
     delete attachObj.views;
   }
